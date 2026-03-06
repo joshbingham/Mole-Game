@@ -280,6 +280,7 @@ class GameScene extends Phaser.Scene {
 			lifespan: 500,
 			gravityY: 300,
 			quantity: 10,
+			tint: [0x8B4513, 0x5C4033, 0xA0522D],
 			on: false
 		});
 	}
