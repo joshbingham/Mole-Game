@@ -301,12 +301,19 @@ class GameScene extends Phaser.Scene {
   		const y = gameState.mole.y - 40;
 
 		const rewardText = this.add.text(x, y, '+5', {
-			fontSize: '28px',
+			fontSize: '32px',
 			fontStyle: 'bold',
 			color: '#00ff00',
-			stroke: '#000000',
-			strokeThickness: 4
-		}).setOrigin(0.5);
+			stroke: '#003300',
+			strokeThickness: 6,
+			shadow: {
+				offsetX: 3,
+				offsetY: 3,
+				color: '#000',
+				blur: 2,
+				fill: true
+			}
+			}).setOrigin(0.5);
 
 		this.tweens.timeline({
 
