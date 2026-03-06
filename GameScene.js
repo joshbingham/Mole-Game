@@ -120,6 +120,14 @@ class GameScene extends Phaser.Scene {
 			// shake and flash camera to provide feedback on missed hit
 			this.cameras.main.shake(80, 0.004);
 			this.cameras.main.flash(100, 255, 50, 50);
+			// animate mole to provide feedback on missed hit
+			this.tweens.add({
+				targets: gameState.mole,
+				angle: 10,
+				duration: 80,
+				yoyo: true,
+				repeat: 2
+				});
 			// display how many points the user will lose
 			this.displayPenaltyText();
 
