@@ -125,6 +125,18 @@ class GameScene extends Phaser.Scene {
 	  }
 	};
 
+	const togglePause = () => {
+		if (isPaused === false) {
+			// pause the game and display pause screen
+			isPaused = true;
+			this.displayPauseScreen();
+		} else {
+			// unpause the game and remove pause screen
+			isPaused = false;
+			this.removePauseScreen();
+		}
+	};
+
 		if (isPaused === false) {
 			// check each burrow's location if the user is hitting the corresponding key
 			// and run the handler to determine if user should get a reward or penalty
@@ -138,7 +150,7 @@ class GameScene extends Phaser.Scene {
 		}
 
 		if (Phaser.Input.Keyboard.JustDown(gameState.spaceKey)) {
-
+			togglePause();
 		}
 	}
 
