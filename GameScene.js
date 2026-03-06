@@ -226,7 +226,7 @@ class GameScene extends Phaser.Scene {
 
 	// display user's current combo streak on screen
 	initializeComboText() {
-	gameState.comboText = this.add.text(50, 100, `Combo: ${comboStreak}`, {
+	gameState.comboText = this.add.text(50, 140, `Combo: ${comboStreak}`, {
 		fontSize: '22px',
 		fontStyle: 'bold',
 		color: '#ffcc00',
