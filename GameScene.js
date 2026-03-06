@@ -120,7 +120,7 @@ class GameScene extends Phaser.Scene {
 		};
 
     const onBurrowHit = (key) => {
-      console.log("BURROW HIT:", key);
+      
 	  if (key === currentBurrowKey) {
 		applyHitReward();
 		// animate mole to provide feedback on successful hit and then move mole to new location
@@ -297,17 +297,25 @@ class GameScene extends Phaser.Scene {
 	// display the number of points the user gained
 	displayRewardText() {
 		// add text to display score reward
-		const rewardText = this.add.text(160, 50, '+5', {
-			fontSize: '32px',
-			color: '#00ff00'
-		});
+  		const x = gameState.mole.x;
+  		const y = gameState.mole.y - 40;
+
+		const rewardText = this.add.text(x, y, '+5', {
+			fontSize: '28px',
+			fontStyle: 'bold',
+			color: '#00ff00',
+			stroke: '#000000',
+			strokeThickness: 4
+		}).setOrigin(0.5);
 
 		this.tweens.add({
-		targets: rewardText,
-		y: rewardText.y - 40,
-		alpha: 0,
-		duration: 500,
-		onComplete: () => rewardText.destroy()
+			targets: rewardText,
+			y: y - 60,
+			scale: 1.6,
+			alpha: 0,
+			duration: 600,
+			ease: 'Cubic.easeOut',
+			onComplete: () => rewardText.destroy()
 		});
 	}
 
