@@ -83,6 +83,9 @@ class GameScene extends Phaser.Scene {
 		// set up score text
 		this.initializeScoreText();
 
+		// set up combo text
+		this.initializeComboText();
+
 		// go through each burrow and set up key listeners on the corresponding key
 		this.initializeBurrowKeys();
 
@@ -157,6 +160,9 @@ class GameScene extends Phaser.Scene {
 		this.emitDirtBurst();
 		// apply reward for hitting the mole
 		applyHitReward();
+		// update combo streak and display the new combo streak to the user
+		comboStreak++;
+		this.updateComboDisplay();
 		// animate mole to provide feedback on successful hit and then move mole to new location
 		this.tweens.add({
 			targets: gameState.mole,
@@ -168,6 +174,8 @@ class GameScene extends Phaser.Scene {
 		this.relocateMole();
 	  } else {
 		applyMissPenalty();
+		comboStreak = 0;
+		this.updateComboDisplay();
 	  }
 	};
 
@@ -214,6 +222,17 @@ class GameScene extends Phaser.Scene {
 	// display user's score on screen
 	initializeScoreText() {
 		gameState.scoreText = this.add.text(50, 50, `Score: ${score}`).setColor('#000000');
+	}
+
+	// display user's current combo streak on screen
+	initializeComboText() {
+	gameState.comboText = this.add.text(50, 100, `Combo: ${comboStreak}`, {
+		fontSize: '22px',
+		fontStyle: 'bold',
+		color: '#ffcc00',
+		stroke: '#000000',
+		strokeThickness: 4
+		});
 	}
 
 	// go through each burrow and set up listeners on the corresponding key
@@ -350,6 +369,10 @@ class GameScene extends Phaser.Scene {
 	// update the score text on the screen to reflect the changed amount
 	updateScoreText() {
 		gameState.scoreText.setText(`Score: ${score}`);
+	}
+
+	updateComboDisplay() {
+		gameState.comboText.setText(`Combo: ${comboStreak}`);
 	}
 
 	// display the number of points the user gained
