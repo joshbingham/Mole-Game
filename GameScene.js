@@ -377,13 +377,47 @@ class GameScene extends Phaser.Scene {
 
 	// display the number of points the user lost
 	displayPenaltyText() {
-		// add text to display score penalty
-		const penaltyText = this.add.text(160, 50, '-5').setColor('#991A00');
-		this.time.addEvent({
-			delay: 300, // call after 200ms
-			callback: () => { penaltyText.destroy(); }, // remove text after 200ms
-			args: [penaltyText], // text to remove
-			repeat: -1,
+
+		const x = gameState.mole.x;
+		const y = gameState.mole.y - 40;
+
+		const penaltyText = this.add.text(x, y, '-5', {
+			fontSize: '32px',
+			fontStyle: 'bold',
+			color: '#ff4444',
+			stroke: '#330000',
+			strokeThickness: 6,
+			shadow: {
+			offsetX: 3,
+			offsetY: 3,
+			color: '#000',
+			blur: 2,
+			fill: true
+			}
+		}).setOrigin(0.5);
+
+		this.tweens.timeline({
+
+			targets: penaltyText,
+
+			tweens: [
+			{
+				scale: 1.6,
+				duration: 100,
+				ease: 'Back.easeOut'
+			},
+			{
+				y: y + 60,   // falls downward instead of upward
+				alpha: 0,
+				scale: 1,
+				angle: Phaser.Math.Between(-15, 15),
+				duration: 500,
+				ease: 'Cubic.easeOut'
+			}
+			],
+
+			onComplete: () => penaltyText.destroy()
+
 		});
 	}
 
