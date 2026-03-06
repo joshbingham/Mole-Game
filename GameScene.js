@@ -112,7 +112,8 @@ class GameScene extends Phaser.Scene {
 		this.relocateMole();
 	  } else {
 		applyMissPenalty();
-	  };
+	  }
+	};
 
 		if (isPaused === false) {
 			// check each burrow's location if the user is hitting the corresponding key
@@ -300,3 +301,4 @@ class GameScene extends Phaser.Scene {
 		gameState.resumeText.destroy();
 	}
 }
+
