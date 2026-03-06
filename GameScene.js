@@ -308,15 +308,28 @@ class GameScene extends Phaser.Scene {
 			strokeThickness: 4
 		}).setOrigin(0.5);
 
-		this.tweens.add({
+		this.tweens.timeline({
+
 			targets: rewardText,
-			y: y - 60,
-			scale: 1.6,
-			alpha: 0,
-			duration: 600,
-			ease: 'Cubic.easeOut',
+
+			tweens: [
+				{
+				scale: 2,
+				duration: 100,
+				ease: 'Back.easeOut'
+				},
+				{
+				y: y - 70,
+				alpha: 0,
+				scale: 1.2,
+				duration: 500,
+				ease: 'Cubic.easeOut'
+				}
+			],
+
 			onComplete: () => rewardText.destroy()
-		});
+
+			});
 	}
 
 	// display the number of points the user lost
