@@ -93,6 +93,10 @@ class GameScene extends Phaser.Scene {
 		};
 		// user successfully hit the mole, so reward the user with 5pts
 		const applyHitReward = () => {
+			// shake and flash camera to provide feedback on successful hit
+			this.cameras.main.shake(100, 0.01);
+			this.cameras.main.flash(100, 255, 255, 255);
+			
 			// display how many points the user will gain
 			this.displayRewardText();
 
