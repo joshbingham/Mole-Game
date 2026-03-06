@@ -163,6 +163,7 @@ class GameScene extends Phaser.Scene {
 		// update combo streak and display the new combo streak to the user
 		comboStreak++;
 		this.updateComboDisplay();
+		this.checkComboMilestone();
 		// animate mole to provide feedback on successful hit and then move mole to new location
 		this.tweens.add({
 			targets: gameState.mole,
@@ -233,6 +234,36 @@ class GameScene extends Phaser.Scene {
 		stroke: '#000000',
 		strokeThickness: 4
 		});
+	}
+
+	// display combo milestone popup and shake screen if user reaches a combo milestone at 5, 10, or 15 combo streaks
+	checkComboMilestone() {
+		const milestone = [5, 10, 15];
+		if (milestone.includes(comboStreak)) {
+			const x = 240; // center of the canvas
+			const y = 300;
+
+			const milestoneText = this.add.text(x, y, `COMBO x${comboStreak}!`, {
+			fontSize: '48px',
+			fontStyle: 'bold',
+			color: '#FFD700',
+			stroke: '#FF8C00',
+			strokeThickness: 8
+			}).setOrigin(0.5);
+
+			// Animate the popup
+			this.tweens.add({
+			targets: milestoneText,
+			scale: { from: 0, to: 1.5 },
+			alpha: { from: 0, to: 1 },
+			duration: 200,
+			yoyo: true,
+			onComplete: () => milestoneText.destroy()
+			});
+
+			// shake screen
+			this.cameras.main.shake(150, 0.02);
+		}
 	}
 
 	// go through each burrow and set up listeners on the corresponding key
