@@ -96,7 +96,7 @@ class GameScene extends Phaser.Scene {
 			// shake and flash camera to provide feedback on successful hit
 			this.cameras.main.shake(100, 0.01);
 			this.cameras.main.flash(100, 255, 255, 255);
-			
+
 			// display how many points the user will gain
 			this.displayRewardText();
 
@@ -289,12 +289,17 @@ class GameScene extends Phaser.Scene {
 	// display the number of points the user gained
 	displayRewardText() {
 		// add text to display score reward
-		const rewardText = this.add.text(160, 50, '+5').setColor('#228B22');
-		this.time.addEvent({
-			delay: 500, // call after 200ms
-			callback:  () => { rewardText.destroy(); }, // remove text after 200ms
-			args: [rewardText], // text to remove
-			repeat: -1,
+		const rewardText = this.add.text(160, 50, '+5', {
+			fontSize: '32px',
+			color: '#00ff00'
+		});
+
+		this.tweens.add({
+		targets: rewardText,
+		y: rewardText.y - 40,
+		alpha: 0,
+		duration: 500,
+		onComplete: () => rewardText.destroy()
 		});
 	}
 
