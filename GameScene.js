@@ -329,6 +329,7 @@ class GameScene extends Phaser.Scene {
 				y: y - 70,
 				alpha: 0,
 				scale: 1.2,
+				angle: Phaser.Math.Between(-10, 10),
 				duration: 500,
 				ease: 'Cubic.easeOut'
 				}
