@@ -82,6 +82,9 @@ class GameScene extends Phaser.Scene {
 
 		// set up text for timer and callback for countdown
 		this.initializeTimer(onSecondElapsed);
+
+		// set up particle emitter for dirt when mole is hit
+		this.initializeParticles();
 	}
 
 	// periodically checks and handles user input by updating game logic
@@ -127,6 +130,9 @@ class GameScene extends Phaser.Scene {
     const onBurrowHit = (key) => {
       
 	  if (key === currentBurrowKey) {
+		// emit dirt particles at the mole's current location
+		this.emitDirtBurst();
+		// apply reward for hitting the mole
 		applyHitReward();
 		// animate mole to provide feedback on successful hit and then move mole to new location
 		this.tweens.add({
@@ -262,7 +268,30 @@ class GameScene extends Phaser.Scene {
 			loop: true, // repeat forever
 		});
 	}
+	// set up particle emitter for dirt when mole is hit
+	initializeParticles() {
 
+		gameState.dirtParticles = this.add.particles('dirt');
+
+		gameState.dirtEmitter = gameState.dirtParticles.createEmitter({
+			speed: { min: -200, max: 200 },
+			angle: { min: 0, max: 360 },
+			scale: { start: 0.6, end: 0 },
+			lifespan: 500,
+			gravityY: 300,
+			quantity: 10,
+			on: false
+		});
+	}
+	// emit dirt particles at the mole's current location when mole is hit
+	emitDirtBurst() {
+
+		const x = gameState.mole.x;
+		const y = gameState.mole.y;
+
+		gameState.dirtEmitter.explode(20, x, y);
+
+	}
 	// fetches a random burrow from our list of burrows
 	getRandomBurrow() {
 		return Phaser.Utils.Array.GetRandom(this.burrowLocations);
