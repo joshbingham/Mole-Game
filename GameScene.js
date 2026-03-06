@@ -104,10 +104,15 @@ class GameScene extends Phaser.Scene {
 			// display the new score to the user
 			this.updateScoreText();
 		};
-    console.warn("update running");
+
     const onBurrowHit = (key) => {
-      console.warn("BURROW HIT:", key);
-    };
+      console.log("BURROW HIT:", key);
+	  if (key === currentBurrowKey) {
+		applyHitReward();
+		this.relocateMole();
+	  } else {
+		applyMissPenalty();
+	  };
 
 		if (isPaused === false) {
 			// check each burrow's location if the user is hitting the corresponding key
