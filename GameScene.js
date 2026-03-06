@@ -123,6 +123,14 @@ class GameScene extends Phaser.Scene {
       console.log("BURROW HIT:", key);
 	  if (key === currentBurrowKey) {
 		applyHitReward();
+		// animate mole to provide feedback on successful hit and then move mole to new location
+		this.tweens.add({
+			targets: gameState.mole,
+			scaleX: 0.4,
+			scaleY: 0.3,
+			duration: 80,
+			yoyo: true
+			});
 		this.relocateMole();
 	  } else {
 		applyMissPenalty();
