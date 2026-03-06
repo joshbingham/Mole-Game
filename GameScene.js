@@ -40,6 +40,11 @@ class GameScene extends Phaser.Scene {
 		this.load.spritesheet('mole',
 			'https://content.codecademy.com/courses/learn-phaser/mole-unearther/mole-sprite.png',
 			{ frameWidth: 198, frameHeight: 250 });
+		// dirt particle that will be emitted when mole is hit
+		this.load.image(
+			'dirt',
+			'https://labs.phaser.io/assets/particles/brown.png'
+			);
 	}
 
 	// set up scene visuals, animations, and game logic when events occur
