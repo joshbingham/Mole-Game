@@ -3,6 +3,18 @@ let timeLeft = 30;
 let score = 0;
 let isPaused = false;
 let currentBurrowKey;
+// initialise comboStreak to 0, which will keep track of how many times in a row the user has successfully hit the mole
+let comboStreak = 0;
+// updates the combo display to show the current comboStreak
+function handleHit() {
+  comboStreak++;
+  updateComboDisplay();
+}
+// resets comboStreak to 0 if user misses the mole and updates the display
+function handleMiss() {
+  comboStreak = 0;
+  updateComboDisplay();
+}
 
 const gameState = {};
 
