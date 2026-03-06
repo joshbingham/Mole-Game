@@ -87,6 +87,10 @@ class GameScene extends Phaser.Scene {
 			this.scene.start('EndScene');
 		}
 
+		// update score
+		const updateScore = (points) => {
+			score += points;
+		};
 		// user successfully hit the mole, so reward the user with 5pts
 		const applyHitReward = () => {
 			// display how many points the user will gain
@@ -94,6 +98,9 @@ class GameScene extends Phaser.Scene {
 
 			// display the new score to the user
 			this.updateScoreText();
+
+			// update the score
+			updateScore(5);
 		};
 
 		// user missed the mole, so penalize the user by taking away 5pts
@@ -103,6 +110,9 @@ class GameScene extends Phaser.Scene {
 
 			// display the new score to the user
 			this.updateScoreText();
+
+			// update the score
+			updateScore(-5);
 		};
 
     const onBurrowHit = (key) => {
