@@ -117,6 +117,9 @@ class GameScene extends Phaser.Scene {
 
 		// user missed the mole, so penalize the user by taking away 5pts
 		const applyMissPenalty = () => {
+			// shake and flash camera to provide feedback on missed hit
+			this.cameras.main.shake(80, 0.004);
+			this.cameras.main.flash(100, 255, 50, 50);
 			// display how many points the user will lose
 			this.displayPenaltyText();
 
