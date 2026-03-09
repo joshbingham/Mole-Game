@@ -105,27 +105,27 @@ class GameScene extends Phaser.Scene {
 		};
 		// user successfully hit the mole, so reward the user with 5pts
 		const applyHitReward = () => {
-			// shake and flash camera to provide feedback on successful hit
-			this.cameras.main.shake(100, 0.01);
-			if (comboStreak >= 15) {
-			this.cameras.main.flash(120, 255, 80, 80); // red
-			} else if (comboStreak >= 10) {
-			this.cameras.main.flash(120, 255, 200, 0); // gold
-			} else if (comboStreak >= 5) {
-			this.cameras.main.flash(100, 255, 255, 150); // yellow
-			} else {
-			this.cameras.main.flash(100, 255, 255, 255);
-			}
-
 			// calculate combo-based points
 			const pointsEarned = calculatePoints();
 
-			// display how many points the user will gain taking into account combo streak
-			this.displayRewardText(pointsEarned);
-
-			// display the new score to the user
+			// update the score first
 			score += pointsEarned;
 			this.updateScoreText();
+
+			// shake and flash camera to provide feedback on successful hit
+			this.cameras.main.shake(100, 0.01);
+			if (comboStreak >= 15) {
+				this.cameras.main.flash(120, 255, 80, 80); // red
+			} else if (comboStreak >= 10) {
+				this.cameras.main.flash(120, 255, 200, 0); // gold
+			} else if (comboStreak >= 5) {
+				this.cameras.main.flash(100, 255, 255, 150); // yellow
+			} else {
+				this.cameras.main.flash(100, 255, 255, 255);
+			}
+
+			// display reward text
+			this.displayRewardText(pointsEarned);
 		};
 
 		// user missed the mole, so penalize the user by taking away 5pts
