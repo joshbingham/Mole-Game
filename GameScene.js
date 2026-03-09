@@ -5,6 +5,8 @@ let isPaused = false;
 let currentBurrowKey;
 // initialise comboStreak to 0, which will keep track of how many times in a row the user has successfully hit the mole
 let comboStreak = 0;
+// milliseconds between mole moves
+let moleMoveDelay = 1500; 
 // updates the combo display to show the current comboStreak
 function handleHit() {
   comboStreak++;
@@ -102,6 +104,9 @@ class GameScene extends Phaser.Scene {
 
 		// set up mole and place in first location
 		this.initializeMole();
+
+		// set up mole movement timer to move mole to new location after a certain amount of time has passed
+		this.startMoleMovement();
 
 		// set up text for timer and callback for countdown
 		this.initializeTimer(onSecondElapsed);
@@ -248,6 +253,21 @@ class GameScene extends Phaser.Scene {
 	// display user's score on screen
 	initializeScoreText() {
 		gameState.scoreText = this.add.text(50, 50, `Score: ${score}`).setColor('#000000');
+	}
+	
+	// set up timer to move mole to new location after a certain amount of time has passed
+	startMoleMovement() {
+
+		gameState.moleTimer = this.time.addEvent({
+			delay: moleMoveDelay,
+			callback: () => {
+			if (!isPaused) {
+				this.relocateMole();
+			}
+			},
+			callbackScope: this,
+			loop: true
+		});
 	}
 
 	// display user's current combo streak on screen
