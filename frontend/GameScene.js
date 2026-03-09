@@ -56,63 +56,48 @@ class GameScene extends Phaser.Scene {
 		// dirt particle that will be emitted when mole is hit
 		this.load.image(
 			'dirt',
-			'https://labs.phaser.io/assets/particles/brown.png'
+			'https://i.postimg.cc/3x3QmFJx/brown.png'
 			);
 	}
 
 	// set up scene visuals, animations, and game logic when events occur
 	create() {
-    // update timer 
-    const updateTimer = () => {
-      timeLeft -= 1;
-    };
-
-		// executed after every second passes
-		const onSecondElapsed = () => {
-			if (isPaused === false) {
-        // elapse one second
-        updateTimer();
-
-				// display the new time to the user
-				this.updateTimerText();
-			}
-		};
+		// reset all game variables
+		score = 0;
+		timeLeft = 30;
+		comboStreak = 0;
+		isPaused = false;
+		moleMoveDelay = 1500;
+		currentBurrowKey = null;
 
 		// display background
 		this.initializeBackground();
 
-		// set up score text
+		// display score and combo
 		this.initializeScoreText();
-
-		// set up combo text
 		this.initializeComboText();
 
-		// go through each burrow and set up key listeners on the corresponding key
+		// display timer (countdown only)
+		this.initializeTimer();
+
+		// set up burrow key listeners
 		this.initializeBurrowKeys();
 
-		// set up animation callbacks
+		// set up animations
 		this.initializeAnimations();
 
-		// set up mole and place in first location
+		// create mole and set initial location
 		this.initializeMole();
 
-		// set up mole movement timer to move mole to new location after a certain amount of time has passed
+		// start mole movement timer
 		this.startMoleMovement();
 
-		// set up text for timer and callback for countdown
-		this.initializeTimer(onSecondElapsed);
-
-		// set up particle emitter for dirt when mole is hit
+		// particle emitter for dirt when mole is hit
 		this.initializeParticles();
 	}
 
 	// periodically checks and handles user input by updating game logic
 	update() {
-		if (timeLeft <= 0) {
-			// Provided for user
-			this.scene.stop('GameScene');
-			this.scene.start('EndScene');
-		}
 
 		// update score
 		const updateScore = (points) => {
@@ -203,13 +188,11 @@ class GameScene extends Phaser.Scene {
 	};
 
 	const togglePause = () => {
-		if (isPaused === false) {
-			// pause the game and display pause screen
-			isPaused = true;
+		isPaused = !isPaused;
+
+		if (isPaused) {
 			this.displayPauseScreen();
 		} else {
-			// unpause the game and remove pause screen
-			isPaused = false;
 			this.removePauseScreen();
 		}
 	};
@@ -263,24 +246,23 @@ class GameScene extends Phaser.Scene {
 	}
 	// increase the mole's movement speed 
 	increaseDifficulty() {
-
 		// reduce delay but keep a minimum speed
 		moleMoveDelay = Math.max(500, moleMoveDelay - 50);
 
-		// restart timer with new speed
-		gameState.moleTimer.remove(false);
+		if (gameState.moleTimer) {
+			gameState.moleTimer.remove(false); // remove old timer
+		}
 
 		gameState.moleTimer = this.time.addEvent({
-			delay: moleMoveDelay,
+			delay: Phaser.Math.Between(moleMoveDelay - 200, moleMoveDelay + 200),
 			callback: () => {
-			if (!isPaused) {
-				this.relocateMole();
-			}
+				if (!isPaused) {
+					this.relocateMole();
+				}
 			},
 			callbackScope: this,
 			loop: true
 		});
-
 	}
 
 	// display user's current combo streak on screen
@@ -388,15 +370,26 @@ class GameScene extends Phaser.Scene {
 	}
 
 	// display remaining time left on screen and run update after every second
-	initializeTimer(timerCallback) {
+	initializeTimer() {
+		// display timer text
 		gameState.timerText = this.add.text(50, 75, `Time: ${timeLeft}`).setColor('#000000');
 
-		this.time.addEvent({
-			delay: 1000, // call after every 1000ms (1sec)
-			callback: timerCallback, // run function after 1sec elapsed
-			args: [1], // amount of time that elapsed
-			callbackScope: this, // scope to this class
-			loop: true, // repeat forever
+		// create a repeating event that only decrements the countdown
+		gameState.gameTimer = this.time.addEvent({
+			delay: 1000, // 1 second
+			callback: () => {
+				if (!isPaused) {
+					timeLeft--;
+					this.updateTimerText();
+
+					if (timeLeft <= 0) {
+						console.log("Time reached zero! Switching to EndScene...");
+						this.scene.stop('GameScene');
+						this.scene.start('EndScene');
+					}
+				}
+			},
+			loop: true
 		});
 	}
 	// set up particle emitter for dirt when mole is hit
@@ -454,7 +447,9 @@ class GameScene extends Phaser.Scene {
 	// play the mole's disappear animation to indicate it was hit
 	// and after animation is complete, mole will move to a new burrow
 	relocateMole() {
-		gameState.mole.anims.play('disappear');
+		if (gameState.mole) {
+			gameState.mole.anims.play('disappear');
+		}
 	}
 
 	// update the clock text on the screen to reflect the changed amount

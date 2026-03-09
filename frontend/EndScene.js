@@ -8,6 +8,11 @@ class EndScene extends Phaser.Scene {
 	}
 
 	create() {
+
+		console.log("Enscene loaded");
+
+		sendScore("Player 1", score);
+
 		const background = this.add.image(0, 0, 'endScreen');
 		background.setOrigin(0);
 		background.setScale(0.5);
