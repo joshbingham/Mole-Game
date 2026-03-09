@@ -179,6 +179,13 @@ class GameScene extends Phaser.Scene {
 		applyHitReward();
 		// update combo streak and display the new combo streak to the user
 		comboStreak++;
+		if (comboStreak >= 10) {
+			gameState.mole.setTint(0xffcc00);
+		}
+
+		if (comboStreak >= 15) {
+			gameState.mole.setTint(0xff4444);
+		}
 		this.updateComboDisplay();
 		this.checkComboMilestone();
 		// animate mole to provide feedback on successful hit and then move mole to new location
@@ -194,6 +201,7 @@ class GameScene extends Phaser.Scene {
 		applyMissPenalty();
 		comboStreak = 0;
 		this.updateComboDisplay();
+		gameState.mole.clearTint();
 	  }
 	};
 
