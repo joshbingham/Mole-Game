@@ -232,27 +232,12 @@ class GameScene extends Phaser.Scene {
 
 	// set up timer to move mole to new location after a certain amount of time has passed
 	startMoleMovement() {
-
-		gameState.moleTimer = this.time.addEvent({
-			delay: Phaser.Math.Between(moleMoveDelay - 200, moleMoveDelay + 200),
-			callback: () => {
-			if (!isPaused) {
-				this.relocateMole();
-			}
-			},
-			callbackScope: this,
-			loop: true
-		});
-	}
-	// increase the mole's movement speed 
-	increaseDifficulty() {
-		// reduce delay but keep a minimum speed
-		moleMoveDelay = Math.max(500, moleMoveDelay - 50);
-
+		// remove existing timer if it exists
 		if (gameState.moleTimer) {
-			gameState.moleTimer.remove(false); // remove old timer
+			gameState.moleTimer.remove(false);
 		}
 
+		// create a repeating timer to move the mole periodically
 		gameState.moleTimer = this.time.addEvent({
 			delay: Phaser.Math.Between(moleMoveDelay - 200, moleMoveDelay + 200),
 			callback: () => {
@@ -264,15 +249,24 @@ class GameScene extends Phaser.Scene {
 			loop: true
 		});
 	}
+ 
+	// increase the mole's movement speed smoothly
+	increaseDifficulty() {
+		// reduce delay but keep a minimum speed
+		moleMoveDelay = Math.max(500, moleMoveDelay - 50);
+
+		// restart mole movement timer with the new delay
+		this.startMoleMovement();
+	}
 
 	// display user's current combo streak on screen
 	initializeComboText() {
-	gameState.comboText = this.add.text(50, 140, `Combo: ${comboStreak}`, {
-		fontSize: '22px',
-		fontStyle: 'bold',
-		color: '#ffcc00',
-		stroke: '#000000',
-		strokeThickness: 4
+		gameState.comboText = this.add.text(50, 140, `Combo: ${comboStreak}`, {
+			fontSize: '22px',
+			fontStyle: 'bold',
+			color: '#ffcc00',
+			stroke: '#000000',
+			strokeThickness: 4
 		});
 	}
 
@@ -369,7 +363,7 @@ class GameScene extends Phaser.Scene {
 		});
 	}
 
-	// display remaining time left on screen and run update after every second
+	// display remaining time left on screen and run countdown every second
 	initializeTimer() {
 		// display timer text
 		gameState.timerText = this.add.text(50, 75, `Time: ${timeLeft}`).setColor('#000000');
@@ -379,9 +373,11 @@ class GameScene extends Phaser.Scene {
 			delay: 1000, // 1 second
 			callback: () => {
 				if (!isPaused) {
+					// decrement time
 					timeLeft--;
 					this.updateTimerText();
 
+					// check for end of game
 					if (timeLeft <= 0) {
 						console.log("Time reached zero! Switching to EndScene...");
 						this.scene.stop('GameScene');
@@ -389,6 +385,7 @@ class GameScene extends Phaser.Scene {
 					}
 				}
 			},
+			callbackScope: this,
 			loop: true
 		});
 	}
