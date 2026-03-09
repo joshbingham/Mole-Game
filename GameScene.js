@@ -7,16 +7,7 @@ let currentBurrowKey;
 let comboStreak = 0;
 // milliseconds between mole moves
 let moleMoveDelay = 1500; 
-// updates the combo display to show the current comboStreak
-function handleHit() {
-  comboStreak++;
-  updateComboDisplay();
-}
-// resets comboStreak to 0 if user misses the mole and updates the display
-function handleMiss() {
-  comboStreak = 0;
-  updateComboDisplay();
-}
+
 
 // calculate points earned based on combo streak
 const calculatePoints = () => {
@@ -184,6 +175,7 @@ class GameScene extends Phaser.Scene {
 		applyHitReward();
 		// update combo streak and display the new combo streak to the user
 		comboStreak++;
+		this.increaseDifficulty();
 		if (comboStreak >= 10) {
 			gameState.mole.setTint(0xffcc00);
 		}
@@ -254,9 +246,29 @@ class GameScene extends Phaser.Scene {
 	initializeScoreText() {
 		gameState.scoreText = this.add.text(50, 50, `Score: ${score}`).setColor('#000000');
 	}
-	
+
 	// set up timer to move mole to new location after a certain amount of time has passed
 	startMoleMovement() {
+
+		gameState.moleTimer = this.time.addEvent({
+			delay: Phaser.Math.Between(moleMoveDelay - 200, moleMoveDelay + 200),
+			callback: () => {
+			if (!isPaused) {
+				this.relocateMole();
+			}
+			},
+			callbackScope: this,
+			loop: true
+		});
+	}
+	// increase the mole's movement speed 
+	increaseDifficulty() {
+
+		// reduce delay but keep a minimum speed
+		moleMoveDelay = Math.max(500, moleMoveDelay - 50);
+
+		// restart timer with new speed
+		gameState.moleTimer.remove(false);
 
 		gameState.moleTimer = this.time.addEvent({
 			delay: moleMoveDelay,
@@ -268,6 +280,7 @@ class GameScene extends Phaser.Scene {
 			callbackScope: this,
 			loop: true
 		});
+
 	}
 
 	// display user's current combo streak on screen
