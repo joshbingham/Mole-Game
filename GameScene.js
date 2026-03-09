@@ -416,12 +416,12 @@ class GameScene extends Phaser.Scene {
 	}
 
 	// display the number of points the user gained
-	displayRewardText() {
+	displayRewardText(points) {
 		// add text to display score reward
   		const x = gameState.mole.x;
   		const y = gameState.mole.y - 40;
 
-		const rewardText = this.add.text(x, y, '+5', {
+		const rewardText = this.add.text(x, y, `+${points}`, {
 			fontSize: '32px',
 			fontStyle: 'bold',
 			color: '#00ff00',
