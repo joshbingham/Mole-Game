@@ -24,3 +24,25 @@ class EndScene extends Phaser.Scene {
 		this.add.text(163, 470, `Your score is ${score}.`).setColor('#553a1f');
 	}
 }
+
+function sendScore(name, score) {
+
+	fetch("http://localhost:3000/scores", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			name: name,
+			score: score
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log("Score saved:", data);
+	})
+	.catch(error => {
+		console.error("Error saving score:", error);
+	});
+
+}
