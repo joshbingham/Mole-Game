@@ -372,9 +372,16 @@ class GameScene extends Phaser.Scene {
 		const x = gameState.mole.x;
 		const y = gameState.mole.y;
 
-		gameState.dirtEmitter.explode(20, x, y);
+		let quantity = 20;
 
+		if (comboStreak >= 15) quantity = 60;
+		else if (comboStreak >= 10) quantity = 40;
+		else if (comboStreak >= 5) quantity = 30;
+
+		gameState.dirtEmitter.explode(quantity, x, y);
+  
 	}
+	
 	// fetches a random burrow from our list of burrows
 	getRandomBurrow() {
 		return Phaser.Utils.Array.GetRandom(this.burrowLocations);
@@ -414,6 +421,7 @@ class GameScene extends Phaser.Scene {
 	updateComboDisplay() {
 		gameState.comboText.setText(`Combo: ${comboStreak}`);
 	}
+
 
 	// display the number of points the user gained
 	displayRewardText(points) {
