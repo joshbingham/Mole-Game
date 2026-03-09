@@ -126,7 +126,15 @@ class GameScene extends Phaser.Scene {
 		const applyHitReward = () => {
 			// shake and flash camera to provide feedback on successful hit
 			this.cameras.main.shake(100, 0.01);
+			if (comboStreak >= 15) {
+			this.cameras.main.flash(120, 255, 80, 80); // red
+			} else if (comboStreak >= 10) {
+			this.cameras.main.flash(120, 255, 200, 0); // gold
+			} else if (comboStreak >= 5) {
+			this.cameras.main.flash(100, 255, 255, 150); // yellow
+			} else {
 			this.cameras.main.flash(100, 255, 255, 255);
+			}
 
 			// calculate combo-based points
 			const pointsEarned = calculatePoints();
@@ -381,7 +389,7 @@ class GameScene extends Phaser.Scene {
 		gameState.dirtEmitter.explode(quantity, x, y);
   
 	}
-	
+
 	// fetches a random burrow from our list of burrows
 	getRandomBurrow() {
 		return Phaser.Utils.Array.GetRandom(this.burrowLocations);
