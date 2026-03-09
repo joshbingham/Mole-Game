@@ -16,6 +16,14 @@ function handleMiss() {
   updateComboDisplay();
 }
 
+// calculate points earned based on combo streak
+const calculatePoints = () => {
+  if (comboStreak >= 15) return 15; // big combo
+  if (comboStreak >= 10) return 10;
+  if (comboStreak >= 5) return 7;
+  return 5; // base points
+};
+
 const gameState = {};
 
 class GameScene extends Phaser.Scene {
@@ -120,14 +128,15 @@ class GameScene extends Phaser.Scene {
 			this.cameras.main.shake(100, 0.01);
 			this.cameras.main.flash(100, 255, 255, 255);
 
-			// display how many points the user will gain
-			this.displayRewardText();
+			// calculate combo-based points
+			const pointsEarned = calculatePoints();
+
+			// display how many points the user will gain taking into account combo streak
+			this.displayRewardText(pointsEarned);
 
 			// display the new score to the user
+			score += pointsEarned;
 			this.updateScoreText();
-
-			// update the score
-			updateScore(5);
 		};
 
 		// user missed the mole, so penalize the user by taking away 5pts
@@ -256,7 +265,7 @@ class GameScene extends Phaser.Scene {
 			targets: milestoneText,
 			scale: { from: 0, to: 1.5 },
 			alpha: { from: 0, to: 1 },
-			duration: 200,
+			duration: 350,
 			yoyo: true,
 			onComplete: () => milestoneText.destroy()
 			});
