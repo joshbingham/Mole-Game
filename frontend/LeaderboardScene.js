@@ -16,7 +16,7 @@ class LeaderboardScene extends Phaser.Scene {
     // Fetch scores from backend
     let scores = [];
     try {
-        const response = await fetch("http://localhost:3000/scores");
+        const response = await fetch("https://mole-unearther.onrender.com/scores/top10");
         scores = await response.json();
 
         // Sort descending by score
