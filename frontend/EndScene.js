@@ -8,57 +8,106 @@ class EndScene extends Phaser.Scene {
 	}
 
 	create() {
+		// Display final score
+		this.add.text(240, 150, `Your Score: ${score}`, {
+			fontSize: '48px',
+			fontStyle: 'bold',
+			color: '#ffcc00',
+			stroke: '#000000',
+			strokeThickness: 6
+		}).setOrigin(0.5);
 
-		sendScore("Player 1", score);
+		// Instruction to enter name
+		const instructionText = this.add.text(240, 220, 'Enter your name:', {
+			fontSize: '28px',
+			fontStyle: 'bold',
+			color: '#ffcc00',
+			stroke: '#000000',
+			strokeThickness: 4
+		}).setOrigin(0.5);
 
-		const background = this.add.image(0, 0, 'endScreen');
-		background.setOrigin(0);
-		background.setScale(0.5);
+		// Create HTML input element for name
+		const nameInput = document.createElement('input');
+		nameInput.type = 'text';
+		nameInput.placeholder = 'Your name';
+		nameInput.style.position = 'absolute';
+		nameInput.style.width = '240px';
+		nameInput.style.fontSize = '24px';
+		nameInput.style.padding = '8px';
+		nameInput.style.borderRadius = '12px';
+		nameInput.style.border = '3px solid #ffcc00';
+		nameInput.style.backgroundColor = '#553a1f';
+		nameInput.style.color = '#ffcc00';
+		nameInput.style.fontWeight = 'bold';
+		document.body.appendChild(nameInput);
 
-		// display score
-  		this.add.text(163, 470, `Your score is ${score}.`).setColor('#553a1f');
+		// Submit button
+		const submitButton = document.createElement('button');
+		submitButton.innerText = 'Submit Score';
+		submitButton.style.position = 'absolute';
+		submitButton.style.width = '160px';
+		submitButton.style.fontSize = '20px';
+		submitButton.style.padding = '8px';
+		submitButton.style.borderRadius = '12px';
+		submitButton.style.border = '3px solid #ffcc00';
+		submitButton.style.backgroundColor = '#ffcc00';
+		submitButton.style.color = '#553a1f';
+		submitButton.style.fontWeight = 'bold';
+		submitButton.style.cursor = 'pointer';
 
-		// View Leaderboard button
-		const leaderboardButton = this.add.text(240, 550, "View Leaderboard", {
-			fontSize: "28px",
-			color: "#0000ff"
+		// Hover effect
+		submitButton.onmouseover = () => { submitButton.style.backgroundColor = '#ffd633'; }
+		submitButton.onmouseout = () => { submitButton.style.backgroundColor = '#ffcc00'; }
+
+		document.body.appendChild(submitButton);
+
+		// Center input and button relative to instruction text and canvas
+		const canvasRect = this.game.canvas.getBoundingClientRect();
+		const canvasLeft = canvasRect.left;
+		const canvasTop = canvasRect.top;
+
+		// After elements are in DOM, adjust their left position to center them
+		nameInput.style.top = canvasTop + instructionText.y + 30 + 'px';
+		nameInput.style.left = canvasLeft + instructionText.x - nameInput.offsetWidth / 2 + 'px';
+		submitButton.style.top = canvasTop + instructionText.y + 90 + 'px';
+		submitButton.style.left = canvasLeft + instructionText.x - submitButton.offsetWidth / 2 + 'px';
+
+		// Submit button click
+		submitButton.addEventListener('click', async () => {
+			const playerName = nameInput.value.trim() || 'Player 1';
+
+			try {
+				const response = await fetch('http://localhost:3000/scores', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ name: playerName, score })
+				});
+
+				const result = await response.json();
+				console.log('Score saved:', result);
+
+				// Clean up HTML elements
+				nameInput.remove();
+				submitButton.remove();
+
+				// Go to leaderboard
+				this.scene.start('LeaderboardScene');
+			} catch (err) {
+				console.error('Failed to save score:', err);
+			}
+		});
+
+		// Optional: Back to Menu button
+		const menuButton = this.add.text(240, 420, 'Back to Menu', {
+			fontSize: '28px',
+			color: '#00ccff'
 		}).setOrigin(0.5).setInteractive();
 
-		leaderboardButton.on("pointerdown", () => {
-			this.scene.start("LeaderboardScene");
-		});
-
-		this.input.on('pointerup', () => {
-			score = 0;
-			timeLeft = 30;
-			isPaused = false;
-
+		menuButton.on('pointerdown', () => {
+			nameInput.remove();
+			submitButton.remove();
 			this.scene.start('MenuScene');
-			this.scene.stop('EndScene');
 		});
-
-		this.add.text(163, 470, `Your score is ${score}.`).setColor('#553a1f');
 	}
 }
 
-function sendScore(name, score) {
-
-	fetch("http://localhost:3000/scores", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
-			name: name,
-			score: score
-		})
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log("Score saved:", data);
-	})
-	.catch(error => {
-		console.error("Error saving score:", error);
-	});
-
-}
