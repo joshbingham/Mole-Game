@@ -9,20 +9,31 @@ class EndScene extends Phaser.Scene {
 
 	create() {
 
-		console.log("Enscene loaded");
-
 		sendScore("Player 1", score);
 
 		const background = this.add.image(0, 0, 'endScreen');
 		background.setOrigin(0);
 		background.setScale(0.5);
 
+		// display score
+  		this.add.text(163, 470, `Your score is ${score}.`).setColor('#553a1f');
+
+		// View Leaderboard button
+		const leaderboardButton = this.add.text(240, 550, "View Leaderboard", {
+			fontSize: "28px",
+			color: "#0000ff"
+		}).setOrigin(0.5).setInteractive();
+
+		leaderboardButton.on("pointerdown", () => {
+			this.scene.start("LeaderboardScene");
+		});
+
 		this.input.on('pointerup', () => {
 			score = 0;
 			timeLeft = 30;
 			isPaused = false;
 
-			this.scene.start('GameScene');
+			this.scene.start('MenuScene');
 			this.scene.stop('EndScene');
 		});
 
