@@ -6,7 +6,7 @@ const config = {
 		default: 'arcade',
 	},
 	backgroundColor: 'F8B392',
-	scene: [StartScene, GameScene, EndScene],
+	scene: [MenuScene, StartScene, GameScene, EndScene, LeaderboardScene],
 };
 
 const game = new Phaser.Game(config);
