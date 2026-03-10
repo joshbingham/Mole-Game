@@ -5,7 +5,7 @@ const config = {
 	physics: {
 		default: 'arcade',
 	},
-	backgroundColor: 'F8B392',
+	backgroundColor: '#F8B392',
 	scene: [MenuScene, StartScene, GameScene, EndScene, LeaderboardScene],
 };
 
