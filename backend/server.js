@@ -12,6 +12,10 @@ app.get("/", (req, res) => {
   res.send("Mole Game API running");
 });
 
+app.get("/scores", (req, res) => {
+  res.json(scores);
+});
+
 app.post("/scores", (req, res) => {
 
   const { name, score } = req.body;
