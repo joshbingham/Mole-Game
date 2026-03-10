@@ -12,15 +12,33 @@ class LeaderboardScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
 
-    // Fetch top scores from API
-    let scores = [];
-    try {
-      const response = await fetch('https://your-backend.com/api/scores/top10');
-      scores = await response.json();
-    } catch (err) {
-      console.error('Failed to fetch scores:', err);
-      this.add.text(240, 200, 'Unable to load scores', { fontSize: '24px', color: '#ff0000' }).setOrigin(0.5);
-    }
+    // Fetch scores from your local server
+    fetch("http://localhost:3000/scores")
+    .then(response => response.json())
+    .then(data => {
+
+        console.log("Scores received:", data);
+
+        // sort highest score first
+        data.sort((a, b) => b.score - a.score);
+
+        // take top 10
+        const topScores = data.slice(0, 10);
+
+        // display them
+        topScores.forEach((entry, index) => {
+        const text = `${index + 1}. ${entry.name} - ${entry.score}`;
+        this.add.text(240, 150 + index * 40, text, {
+            fontSize: "24px",
+            color: "#ffff00"
+        }).setOrigin(0.5);
+        });
+
+    })
+    .catch(error => {
+        console.error("Error fetching scores:", error);
+        this.add.text(240, 200, 'Unable to load scores', { fontSize: '24px', color: '#ff0000' }).setOrigin(0.5);
+    });
 
     // Display scores
     scores.forEach((entry, index) => {
