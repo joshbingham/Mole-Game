@@ -16,6 +16,13 @@ app.get("/scores", (req, res) => {
   res.json(scores);
 });
 
+app.get("/scores/top10", (req, res) => {
+  const top10 = scores
+    .sort((a, b) => b.score - a.score) // descending order
+    .slice(0, 10);
+  res.json(top10);
+});
+
 app.post("/scores", (req, res) => {
 
   const { name, score } = req.body;
@@ -34,6 +41,8 @@ app.post("/scores", (req, res) => {
 
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
