@@ -77,7 +77,7 @@ class EndScene extends Phaser.Scene {
 			const playerName = nameInput.value.trim() || 'Player 1';
 
 			try {
-				const response = await fetch('http://localhost:3000/scores', {
+				const response = await fetch("https://mole-unearther.onrender.com/scores", {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ name: playerName, score })
