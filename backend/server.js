@@ -1,56 +1,59 @@
-const express = require("express");
-const cors = require("cors");
-
-const app = express();
-
-require('dotenv').config();
+require('dotenv').config(); // Load env variables
+const express = require('express');
+const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const scores = [];
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
-app.get("/", (req, res) => {
-  res.send("Mole Game API running");
+// Health check
+app.get('/', (req, res) => {
+  res.send('Mole Game API running with Supabase!');
 });
 
-app.get("/scores", (req, res) => {
-  res.json(scores);
+// Get top 10 scores
+app.get('/scores/top10', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('scores')
+      .select('*')
+      .order('score', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch top scores' });
+  }
 });
 
-app.get("/scores/top10", (req, res) => {
-  const top10 = scores
-    .sort((a, b) => b.score - a.score) // descending order
-    .slice(0, 10);
-  res.json(top10);
-});
-
-app.post("/scores", (req, res) => {
-
+// Add a new score
+app.post('/scores', async (req, res) => {
   const { name, score } = req.body;
 
-  const newScore = {
-    name,
-    score,
-    date: new Date()
-  };
+  try {
+    const { data, error } = await supabase
+      .from('scores')
+      .insert([{ name, score, date: new Date() }]);
 
-  scores.push(newScore);
+    if (error) throw error;
 
-  console.log("New score added:", newScore);
-
-  res.json({ message: "Score saved successfully" });
-
+    res.json({ message: 'Score saved successfully', data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save score' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
