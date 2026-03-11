@@ -19,6 +19,8 @@ class LeaderboardScene extends Phaser.Scene {
       const response = await fetch("https://mole-unearther.onrender.com/scores/top10");
       const scores = await response.json();
 
+      console.log("Leaderboard scores:", scores);
+
       scores.forEach((entry, index) => {
 
         let prefix = `${index + 1}.`;
