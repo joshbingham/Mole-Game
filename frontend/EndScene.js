@@ -61,16 +61,15 @@ class EndScene extends Phaser.Scene {
 
 		document.body.appendChild(submitButton);
 
-		// Center input and button relative to instruction text and canvas
+		// Center input and button relative to canvas and instruction text
 		const canvasRect = this.game.canvas.getBoundingClientRect();
-		const canvasLeft = canvasRect.left;
-		const canvasTop = canvasRect.top;
+		const canvasCenterX = canvasRect.left + canvasRect.width / 2;
 
-		// After elements are in DOM, adjust their left position to center them
-		nameInput.style.top = canvasTop + instructionText.y + 30 + 'px';
-		nameInput.style.left = canvasLeft + instructionText.x - nameInput.offsetWidth / 2 + 'px';
-		submitButton.style.top = canvasTop + instructionText.y + 90 + 'px';
-		submitButton.style.left = canvasLeft + instructionText.x - submitButton.offsetWidth / 2 + 'px';
+		nameInput.style.top = canvasRect.top + instructionText.y + 30 + 'px';
+		nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
+
+		submitButton.style.top = canvasRect.top + instructionText.y + 90 + 'px';
+		submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
 
 		// Submit button click
 		submitButton.addEventListener('click', async () => {
