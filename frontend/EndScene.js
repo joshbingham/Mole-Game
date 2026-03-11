@@ -108,6 +108,17 @@ class EndScene extends Phaser.Scene {
 			submitButton.remove();
 			this.scene.start('MenuScene');
 		});
+
+		const playAgainButton = this.add.text(240, 470, 'Play Again', {
+			fontSize: '28px',
+			color: '#00ff00'
+		}).setOrigin(0.5).setInteractive();
+
+		playAgainButton.on('pointerdown', () => {
+			nameInput.remove();
+			submitButton.remove();
+			this.scene.start('GameScene');
+		});
 	}
 }
 
