@@ -21,7 +21,13 @@ class LeaderboardScene extends Phaser.Scene {
 
       scores.forEach((entry, index) => {
 
-        const text = `${index + 1}. ${entry.name} - ${entry.score}`;
+        let prefix = `${index + 1}.`;
+
+        if (index === 0) prefix = "🥇";
+        if (index === 1) prefix = "🥈";
+        if (index === 2) prefix = "🥉";
+
+        const text = `${prefix} ${entry.name} - ${entry.score}`;
 
         this.add.text(240, 150 + index * 40, text, {
           fontSize: '26px',
