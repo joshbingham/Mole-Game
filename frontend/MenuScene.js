@@ -35,9 +35,19 @@ class MenuScene extends Phaser.Scene {
 
     // Leaderboard button
     const leaderboardButton = this.add.text(240, 400, 'Leaderboard', {
-      fontSize: '32px',
-      color: '#00ccff'
-    }).setOrigin(0.5).setInteractive();
+      fontSize: '36px',
+      fontStyle: 'bold',
+      color: '#ffcc00',
+      stroke: '#000000',
+      strokeThickness: 6,
+      backgroundColor: '#553a1f',
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true });
+
+    leaderboardButton.on('pointerover', () => leaderboardButton.setScale(1.1));
+    leaderboardButton.on('pointerout', () => leaderboardButton.setScale(1));
 
     leaderboardButton.on('pointerdown', () => {
       this.scene.start('LeaderboardScene');
