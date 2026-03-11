@@ -68,10 +68,10 @@ class EndScene extends Phaser.Scene {
 			const canvasTop = canvasRect.top;
 
 			// Slightly lower than instruction text
-			nameInput.style.top = canvasTop + instructionText.y + 100 + 'px';
+			nameInput.style.top = canvasTop + instructionText.y + 140 + 'px';
 			nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
 
-			submitButton.style.top = canvasTop + instructionText.y + 170 + 'px';
+			submitButton.style.top = canvasTop + instructionText.y + 210 + 'px';
 			submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
 		};
 
