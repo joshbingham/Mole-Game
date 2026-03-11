@@ -61,30 +61,25 @@ class EndScene extends Phaser.Scene {
 
 		document.body.appendChild(submitButton);
 
-		// Center input and button relative to Phaser canvas coordinates
-		function centerInputAndButton() {
+		// Function to center input and button
+		const centerInputAndButton = () => {
 		const canvasRect = this.game.canvas.getBoundingClientRect();
 
-		// Phaser canvas center
-		const canvasCenterX = canvasRect.left + this.game.config.width / 2;
+		const canvasCenterX = canvasRect.left + canvasRect.width / 2;
 		const canvasTop = canvasRect.top;
 
-		// Input slightly below instruction text
 		nameInput.style.top = canvasTop + instructionText.y + 50 + 'px';
 		nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
 
-		// Submit button slightly below input
 		submitButton.style.top = canvasTop + instructionText.y + 110 + 'px';
 		submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
-		}
+		};
 
-		// Call once at create
-		centerInputAndButton.call(this);
+		// Call it once at scene creation
+		centerInputAndButton();
 
-		// Optional: adjust on window resize
-		window.addEventListener('resize', () => {
-		centerInputAndButton.call(this);
-		});
+		// Update on window resize
+		window.addEventListener('resize', centerInputAndButton);
 
 		// Submit button click
 		submitButton.addEventListener('click', async () => {
