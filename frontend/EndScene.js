@@ -61,24 +61,24 @@ class EndScene extends Phaser.Scene {
 
 		document.body.appendChild(submitButton);
 
-		// Function to center input and button
+		// Function to center input and button dynamically
 		const centerInputAndButton = () => {
-		const canvasRect = this.game.canvas.getBoundingClientRect();
+			const canvasRect = this.game.canvas.getBoundingClientRect();
+			const canvasCenterX = canvasRect.left + canvasRect.width / 2;
+			const canvasTop = canvasRect.top;
 
-		const canvasCenterX = canvasRect.left + canvasRect.width / 2;
-		const canvasTop = canvasRect.top;
+			// Slightly lower than instruction text
+			nameInput.style.top = canvasTop + instructionText.y + 60 + 'px';
+			nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
 
-		nameInput.style.top = canvasTop + instructionText.y + 50 + 'px';
-		nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
-
-		submitButton.style.top = canvasTop + instructionText.y + 110 + 'px';
-		submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
+			submitButton.style.top = canvasTop + instructionText.y + 130 + 'px';
+			submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
 		};
 
-		// Call it once at scene creation
+		// Initial centering
 		centerInputAndButton();
 
-		// Update on window resize
+		// Recenter on window resize
 		window.addEventListener('resize', centerInputAndButton);
 
 		// Submit button click
@@ -106,7 +106,7 @@ class EndScene extends Phaser.Scene {
 			}
 		});
 
-		// Optional: Back to Menu button
+		// Back to Menu button
 		const menuButton = this.add.text(240, 420, 'Back to Menu', {
 			fontSize: '28px',
 			color: '#00ccff'
@@ -118,6 +118,7 @@ class EndScene extends Phaser.Scene {
 			this.scene.start('MenuScene');
 		});
 
+		// Play Again button
 		const playAgainButton = this.add.text(240, 470, 'Play Again', {
 			fontSize: '28px',
 			color: '#00ff00'
