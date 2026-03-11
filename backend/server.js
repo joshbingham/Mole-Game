@@ -30,6 +30,7 @@ app.get('/scores/top10', async (req, res) => {
 
     if (error) throw error;
 
+    console.log("Fetched top10 scores:", data);
     res.json(data);
   } catch (err) {
     console.error(err);
