@@ -1,134 +1,128 @@
 class EndScene extends Phaser.Scene {
-	constructor() {
-		super({ key: 'EndScene' });
-	}
+  constructor() {
+    super({ key: 'EndScene' });
+  }
 
-	preload() {
-		this.load.image('endScreen', 'https://content.codecademy.com/courses/learn-phaser/mole-unearther/game-over.png');
-	}
+  preload() {
+    this.load.image('endScreen', 'https://content.codecademy.com/courses/learn-phaser/mole-unearther/game-over.png');
+  }
 
-	create() {
-		// Display final score
-		this.add.text(240, 150, `Your Score: ${score}`, {
-			fontSize: '48px',
-			fontStyle: 'bold',
-			color: '#ffcc00',
-			stroke: '#000000',
-			strokeThickness: 6
-		}).setOrigin(0.5);
+  create(data) {
+    // Get the score passed from GameScene
+    const finalScore = data.finalScore;
 
-		// Instruction to enter name
-		const instructionText = this.add.text(240, 220, 'Enter your name:', {
-			fontSize: '28px',
-			fontStyle: 'bold',
-			color: '#ffcc00',
-			stroke: '#000000',
-			strokeThickness: 4
-		}).setOrigin(0.5);
+    // Display final score
+    this.add.text(240, 150, `Your Score: ${finalScore}`, {
+      fontSize: '48px',
+      fontStyle: 'bold',
+      color: '#ffcc00',
+      stroke: '#000000',
+      strokeThickness: 6
+    }).setOrigin(0.5);
 
-		// Create HTML input element for name
-		const nameInput = document.createElement('input');
-		nameInput.type = 'text';
-		nameInput.placeholder = 'Your name';
-		nameInput.style.position = 'absolute';
-		nameInput.style.width = '240px';
-		nameInput.style.fontSize = '24px';
-		nameInput.style.padding = '8px';
-		nameInput.style.borderRadius = '12px';
-		nameInput.style.border = '3px solid #ffcc00';
-		nameInput.style.backgroundColor = '#553a1f';
-		nameInput.style.color = '#ffcc00';
-		nameInput.style.fontWeight = 'bold';
-		document.body.appendChild(nameInput);
+    // Instruction to enter name
+    const instructionText = this.add.text(240, 220, 'Enter your name:', {
+      fontSize: '28px',
+      fontStyle: 'bold',
+      color: '#ffcc00',
+      stroke: '#000000',
+      strokeThickness: 4
+    }).setOrigin(0.5);
 
-		// Submit button
-		const submitButton = document.createElement('button');
-		submitButton.innerText = 'Submit Score';
-		submitButton.style.position = 'absolute';
-		submitButton.style.width = '160px';
-		submitButton.style.fontSize = '20px';
-		submitButton.style.padding = '8px';
-		submitButton.style.borderRadius = '12px';
-		submitButton.style.border = '3px solid #ffcc00';
-		submitButton.style.backgroundColor = '#ffcc00';
-		submitButton.style.color = '#553a1f';
-		submitButton.style.fontWeight = 'bold';
-		submitButton.style.cursor = 'pointer';
+    // Create HTML input element
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Your name';
+    nameInput.style.position = 'absolute';
+    nameInput.style.width = '240px';
+    nameInput.style.fontSize = '24px';
+    nameInput.style.padding = '8px';
+    nameInput.style.borderRadius = '12px';
+    nameInput.style.border = '3px solid #ffcc00';
+    nameInput.style.backgroundColor = '#553a1f';
+    nameInput.style.color = '#ffcc00';
+    nameInput.style.fontWeight = 'bold';
+    document.body.appendChild(nameInput);
 
-		// Hover effect
-		submitButton.onmouseover = () => { submitButton.style.backgroundColor = '#ffd633'; }
-		submitButton.onmouseout = () => { submitButton.style.backgroundColor = '#ffcc00'; }
+    // Create Submit button
+    const submitButton = document.createElement('button');
+    submitButton.innerText = 'Submit Score';
+    submitButton.style.position = 'absolute';
+    submitButton.style.width = '160px';
+    submitButton.style.fontSize = '20px';
+    submitButton.style.padding = '8px';
+    submitButton.style.borderRadius = '12px';
+    submitButton.style.border = '3px solid #ffcc00';
+    submitButton.style.backgroundColor = '#ffcc00';
+    submitButton.style.color = '#553a1f';
+    submitButton.style.fontWeight = 'bold';
+    submitButton.style.cursor = 'pointer';
 
-		document.body.appendChild(submitButton);
+    submitButton.onmouseover = () => submitButton.style.backgroundColor = '#ffd633';
+    submitButton.onmouseout = () => submitButton.style.backgroundColor = '#ffcc00';
 
-		// Function to center input and button dynamically
-		const centerInputAndButton = () => {
-			const canvasRect = this.game.canvas.getBoundingClientRect();
-			const canvasCenterX = canvasRect.left + canvasRect.width / 2;
-			const canvasTop = canvasRect.top;
+    document.body.appendChild(submitButton);
 
-			// Slightly lower than instruction text
-			nameInput.style.top = canvasTop + instructionText.y + 140 + 'px';
-			nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
+    // Center input and button
+    const centerElements = () => {
+      const canvasRect = this.game.canvas.getBoundingClientRect();
+      const canvasCenterX = canvasRect.left + canvasRect.width / 2;
+      const canvasTop = canvasRect.top;
 
-			submitButton.style.top = canvasTop + instructionText.y + 210 + 'px';
-			submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
-		};
+      nameInput.style.top = canvasTop + instructionText.y + 140 + 'px';
+      nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
 
-		// Initial centering
-		centerInputAndButton();
+      submitButton.style.top = canvasTop + instructionText.y + 210 + 'px';
+      submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
+    };
+    centerElements();
+    window.addEventListener('resize', centerElements);
 
-		// Recenter on window resize
-		window.addEventListener('resize', centerInputAndButton);
+    // Submit button click
+    submitButton.addEventListener('click', async () => {
+      const playerName = nameInput.value.trim() || 'Player 1';
+      try {
+        const response = await fetch("https://mole-unearther.onrender.com/scores", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: playerName, score: finalScore })
+        });
+        const result = await response.json();
+        console.log('Score saved:', result);
 
-		// Submit button click
-		submitButton.addEventListener('click', async () => {
-			const playerName = nameInput.value.trim() || 'Player 1';
+        // Clean up input/button
+        nameInput.remove();
+        submitButton.remove();
 
-			try {
-				const response = await fetch("https://mole-unearther.onrender.com/scores", {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ name: playerName, score })
-				});
+        this.scene.start('LeaderboardScene');
+      } catch (err) {
+        console.error('Failed to save score:', err);
+      }
+    });
 
-				const result = await response.json();
-				console.log('Score saved:', result);
+    // Back to Menu button
+    const menuButton = this.add.text(240, 420, 'Back to Menu', {
+      fontSize: '28px',
+      color: '#00ccff'
+    }).setOrigin(0.5).setInteractive();
 
-				// Clean up HTML elements
-				nameInput.remove();
-				submitButton.remove();
+    menuButton.on('pointerdown', () => {
+      nameInput.remove();
+      submitButton.remove();
+      this.scene.start('MenuScene');
+    });
 
-				// Go to leaderboard
-				this.scene.start('LeaderboardScene');
-			} catch (err) {
-				console.error('Failed to save score:', err);
-			}
-		});
+    // Play Again button
+    const playAgainButton = this.add.text(240, 470, 'Play Again', {
+      fontSize: '28px',
+      color: '#00ff00'
+    }).setOrigin(0.5).setInteractive();
 
-		// Back to Menu button
-		const menuButton = this.add.text(240, 420, 'Back to Menu', {
-			fontSize: '28px',
-			color: '#00ccff'
-		}).setOrigin(0.5).setInteractive();
-
-		menuButton.on('pointerdown', () => {
-			nameInput.remove();
-			submitButton.remove();
-			this.scene.start('MenuScene');
-		});
-
-		// Play Again button
-		const playAgainButton = this.add.text(240, 470, 'Play Again', {
-			fontSize: '28px',
-			color: '#00ff00'
-		}).setOrigin(0.5).setInteractive();
-
-		playAgainButton.on('pointerdown', () => {
-			nameInput.remove();
-			submitButton.remove();
-			this.scene.start('GameScene');
-		});
-	}
+    playAgainButton.on('pointerdown', () => {
+      nameInput.remove();
+      submitButton.remove();
+      this.scene.start('GameScene');
+    });
+  }
 }
 
