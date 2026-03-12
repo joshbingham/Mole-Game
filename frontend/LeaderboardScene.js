@@ -14,10 +14,18 @@ class LeaderboardScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
 
+    // Loading text
+    const loadingText = this.add.text(240, 200, "Loading leaderboard...", {
+      fontSize: "24px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
     try {
 
       const response = await fetch("https://mole-unearther.onrender.com/scores/top10");
       const scores = await response.json();
+
+      loadingText.destroy();
 
       console.log("Leaderboard scores:", scores);
 
