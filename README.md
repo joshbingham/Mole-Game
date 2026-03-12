@@ -1,71 +1,112 @@
-# Mole Unearther 🎮
+Mole Unearther 🎯
 
-Mole Unearther is a browser-based game where players dig up moles to score points and compete on a live leaderboard.
+A browser-based whack-a-mole-style game built with Phaser, Node.js, and PostgreSQL (Supabase), featuring a live leaderboard.
 
-The project combines a **Phaser.js game frontend** with a **Node.js/Express backend** and a **Supabase PostgreSQL database** to store scores.
+🚀 Live Demo
 
-## Live Demo
+Frontend: https://joshbingham.github.io/Mole-Game/
 
-Play the game here:
+Backend / API: https://mole-unearther.onrender.com/
 
-https://mole-unearther-game.netlify.app
+⚠️ Note: The leaderboard may take a few seconds to load due to free hosting wake-up. Using an uptime monitor (like UptimeRobot) can improve responsiveness.
 
-## Features
+🕹️ Gameplay
 
-- Interactive browser game built with Phaser
-- Submit your name and score after each game
-- Global leaderboard showing the top 10 scores
-- Backend API for score submission and retrieval
-- Persistent score storage using Supabase (PostgreSQL)
-- Responsive UI elements for different screen sizes
-- Loading animation while leaderboard data loads
-- Uptime monitoring to prevent backend cold starts
+Click Play Game to start.
 
-## Tech Stack
+Moles will pop up at random positions — hit them using j, k and l on your keyboard to score points.
 
-### Frontend
-- JavaScript
-- Phaser 3
-- HTML / CSS
+At the end of the game, enter your name to submit your score.
 
-### Backend
-- Node.js
-- Express.js
-- REST API
+View the Leaderboard to see the top 10 scores globally.
 
-### Database
-- Supabase
-- PostgreSQL
-- Row Level Security (RLS)
+🛠️ Tech Stack
 
-### Deployment
-- Netlify (frontend)
-- Render (backend)
-- Supabase (database)
+Frontend: Phaser 3, HTML, CSS, JavaScript
 
-### DevOps
-- Environment variables for API keys
-- `.gitignore` to protect secrets
-- Uptime monitoring to keep backend active
+Backend: Node.js, Express
 
-## How It Works
+Database: PostgreSQL (via Supabase)
 
-1. The player starts the game in the browser.
-2. After the game ends, the player enters their name.
-3. The frontend sends a POST request to the backend API.
-4. The backend inserts the score into the Supabase PostgreSQL database.
-5. The leaderboard fetches the top 10 scores from the backend.
+Hosting: GitHub Pages (frontend), Render (backend)
 
-## API Endpoints
+⚡ Features
 
-### Submit Score
+Fully responsive Phaser game that scales to the viewport.
 
-POST `/scores`
+Live leaderboard backed by PostgreSQL (Supabase).
 
-Example request body:
+REST API built with Node.js and Express.
 
-```json
-{
-  "name": "Player1",
-  "score": 120
-}
+Real-time score submission.
+
+Secure environment variables (.env) for API keys.
+
+🏗️ Architecture Diagram
++-----------------+       HTTPS       +-----------------+
+|   Frontend      | <--------------> |   Backend API    |
+|  Phaser 3 Game  |                   | Node.js + Express|
++-----------------+                   +-----------------+
+        |                                     |
+        |                                     |
+        v                                     v
++-----------------+                   +-----------------+
+|   Supabase      | <--------------> |   Database      |
+| PostgreSQL DB   |                   |  scores table   |
++-----------------+                   +-----------------+
+
+Optional: Uptime Monitor (UptimeRobot)
+Keeps Render backend awake to reduce leaderboard loading delays.
+📝 Setup / Development
+Backend
+
+Clone the repo:
+
+git clone https://github.com/joshbingham/Mole-Game.git
+cd Mole-Game/backend
+
+Install dependencies:
+
+npm install
+
+Create a .env file:
+
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+
+Run the server locally:
+
+node server.js
+
+The backend will be available at http://localhost:3000.
+
+Frontend
+
+Open index.html in a browser (or deploy via GitHub Pages).
+
+The frontend communicates with the backend via:
+
+fetch('https://mole-unearther.onrender.com/scores/top10')
+💡 Notes / Considerations
+
+Leaderboard Loading: Free tiers on Render may cause a slight delay when the backend “wakes up.”
+
+Supabase Policies: Row-level security is enabled; INSERT and SELECT policies must allow your API key to read/write scores.
+
+Environment Security: Ensure .env is in .gitignore to prevent exposing keys.
+
+👨‍💻 Next Steps
+
+Improve UI/UX (animations, sounds).
+
+Add more levels or difficulty modes.
+
+Add unit tests for backend routes.
+
+Integrate a caching layer to reduce leaderboard load times.
+
+📬 Contact
+
+LinkedIn: https://www.linkedin.com/in/joshua-bingham-48961112b/
+
+GitHub: https://github.com/joshbingham
