@@ -20,6 +20,15 @@ class LeaderboardScene extends Phaser.Scene {
       color: "#ffffff"
     }).setOrigin(0.5);
 
+    this.tweens.add({
+      targets: loadingText,
+      alpha: 0.3,
+      duration: 800,
+      yoyo: true,
+      repeat: -1
+    });
+
+
     try {
 
       const response = await fetch("https://mole-unearther.onrender.com/scores/top10");
