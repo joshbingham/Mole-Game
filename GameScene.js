@@ -1,30 +1,20 @@
-// Stores game state variables
-let timeLeft = 30;
-let score = 0;
-let isPaused = false;
-let currentBurrowKey = null;
-let comboStreak = 0;
-let moleMoveDelay = 1500;
-
-const gameState = {};
-
-// calculate points earned based on combo streak
-const calculatePoints = () => {
-  if (comboStreak >= 15) return 15;
-  if (comboStreak >= 10) return 10;
-  if (comboStreak >= 5) return 7;
-  return 5;
-};
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: 'GameScene' });
 
+    // Burrow locations and initial game state
     this.burrowLocations = [
       { key: 'j', x: 100, y: 310 },
       { key: 'k', x: 240, y: 390 },
-      { key: 'l', x: 380, y: 310 },
+      { key: 'l', x: 380, y: 310 }
     ];
+
+    this.timeLeft = 30;
+    this.score = 0;
+    this.comboStreak = 0;
+    this.moleMoveDelay = 1500;
+    this.currentBurrowKey = null;
+    this.isPaused = false;
   }
 
   preload() {
@@ -34,14 +24,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // reset game variables
-    score = 0;
-    timeLeft = 30;
-    comboStreak = 0;
-    moleMoveDelay = 1500;
-    currentBurrowKey = null;
-    isPaused = false;
-
+    // Initialize scene visuals and logic
     this.initializeBackground();
     this.initializeScoreText();
     this.initializeComboText();
@@ -55,19 +38,26 @@ class GameScene extends Phaser.Scene {
 
   // ---------------------- CLASS METHODS ----------------------
 
+  calculatePoints() {
+    if (this.comboStreak >= 15) return 15;
+    if (this.comboStreak >= 10) return 10;
+    if (this.comboStreak >= 5) return 7;
+    return 5;
+  }
+
   applyHitReward() {
-    const pointsEarned = calculatePoints();
-    score += pointsEarned;
+    const points = this.calculatePoints();
+    this.score += points;
     this.updateScoreText();
 
-    // camera feedback
+    // Camera feedback
     this.cameras.main.shake(100, 0.01);
-    if (comboStreak >= 15) this.cameras.main.flash(120, 255, 80, 80);
-    else if (comboStreak >= 10) this.cameras.main.flash(120, 255, 200, 0);
-    else if (comboStreak >= 5) this.cameras.main.flash(100, 255, 255, 150);
+    if (this.comboStreak >= 15) this.cameras.main.flash(120, 255, 80, 80);
+    else if (this.comboStreak >= 10) this.cameras.main.flash(120, 255, 200, 0);
+    else if (this.comboStreak >= 5) this.cameras.main.flash(100, 255, 255, 150);
     else this.cameras.main.flash(100, 255, 255, 255);
 
-    this.displayRewardText(pointsEarned);
+    this.displayRewardText(points);
   }
 
   applyMissPenalty() {
@@ -75,7 +65,7 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.flash(100, 255, 50, 50);
 
     this.tweens.add({
-      targets: gameState.mole,
+      targets: this.mole,
       angle: 10,
       duration: 80,
       yoyo: true,
@@ -83,25 +73,25 @@ class GameScene extends Phaser.Scene {
     });
 
     this.displayPenaltyText();
+    this.score -= 5;
     this.updateScoreText();
-    score -= 5;
   }
 
   onBurrowHit(key) {
-    if (key === currentBurrowKey) {
+    if (key === this.currentBurrowKey) {
       this.emitDirtBurst();
       this.applyHitReward();
-      comboStreak++;
+      this.comboStreak++;
       this.increaseDifficulty();
 
-      if (comboStreak >= 10) gameState.mole.setTint(0xffcc00);
-      if (comboStreak >= 15) gameState.mole.setTint(0xff4444);
+      if (this.comboStreak >= 10) this.mole.setTint(0xffcc00);
+      if (this.comboStreak >= 15) this.mole.setTint(0xff4444);
 
       this.updateComboDisplay();
       this.checkComboMilestone();
 
       this.tweens.add({
-        targets: gameState.mole,
+        targets: this.mole,
         scaleX: 0.4,
         scaleY: 0.3,
         duration: 80,
@@ -111,46 +101,46 @@ class GameScene extends Phaser.Scene {
       this.relocateMole();
     } else {
       this.applyMissPenalty();
-      comboStreak = 0;
+      this.comboStreak = 0;
       this.updateComboDisplay();
-      gameState.mole.clearTint();
+      this.mole.clearTint();
     }
   }
 
   togglePause() {
-    isPaused = !isPaused;
-    if (isPaused) this.displayPauseScreen();
+    this.isPaused = !this.isPaused;
+    if (this.isPaused) this.displayPauseScreen();
     else this.removePauseScreen();
   }
 
   // ---------------------- UPDATE LOOP ----------------------
 
   update() {
-    const activeElement = document.activeElement;
-    const typing = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+    const activeEl = document.activeElement;
+    const typing = activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA';
 
-    if (!typing && !isPaused) {
-      if (Phaser.Input.Keyboard.JustDown(gameState.jKey)) this.onBurrowHit('j');
-      if (Phaser.Input.Keyboard.JustDown(gameState.kKey)) this.onBurrowHit('k');
-      if (Phaser.Input.Keyboard.JustDown(gameState.lKey)) this.onBurrowHit('l');
+    if (!typing && !this.isPaused) {
+      if (Phaser.Input.Keyboard.JustDown(this.jKey)) this.onBurrowHit('j');
+      if (Phaser.Input.Keyboard.JustDown(this.kKey)) this.onBurrowHit('k');
+      if (Phaser.Input.Keyboard.JustDown(this.lKey)) this.onBurrowHit('l');
     }
 
-    if (Phaser.Input.Keyboard.JustDown(gameState.spaceKey)) this.togglePause();
+    if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) this.togglePause();
   }
 
   // ---------------------- INITIALIZATION ----------------------
 
   initializeBackground() {
-    const bg = this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.5);
-    const scoreBox = this.add.rectangle(90, 70, 140, 90, 0xFFFFFF).setAlpha(0.5);
+    this.add.image(0, 0, 'background').setOrigin(0, 0).setScale(0.5);
+    this.add.rectangle(90, 70, 140, 90, 0xFFFFFF).setAlpha(0.5);
   }
 
   initializeScoreText() {
-    gameState.scoreText = this.add.text(50, 50, `Score: ${score}`).setColor('#000000');
+    this.scoreText = this.add.text(50, 50, `Score: ${this.score}`).setColor('#000000');
   }
 
   initializeComboText() {
-    gameState.comboText = this.add.text(50, 140, `Combo: ${comboStreak}`, {
+    this.comboText = this.add.text(50, 140, `Combo: ${this.comboStreak}`, {
       fontSize: '22px',
       fontStyle: 'bold',
       color: '#ffcc00',
@@ -160,15 +150,15 @@ class GameScene extends Phaser.Scene {
   }
 
   initializeTimer() {
-    gameState.timerText = this.add.text(50, 75, `Time: ${timeLeft}`).setColor('#000000');
+    this.timerText = this.add.text(50, 75, `Time: ${this.timeLeft}`).setColor('#000000');
 
-    gameState.gameTimer = this.time.addEvent({
+    this.gameTimer = this.time.addEvent({
       delay: 1000,
       callback: () => {
-        if (!isPaused) {
-          timeLeft--;
+        if (!this.isPaused) {
+          this.timeLeft--;
           this.updateTimerText();
-          if (timeLeft <= 0) {
+          if (this.timeLeft <= 0) {
             this.scene.stop('GameScene');
             this.scene.start('EndScene');
           }
@@ -180,10 +170,10 @@ class GameScene extends Phaser.Scene {
   }
 
   initializeBurrowKeys() {
-    gameState.jKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-    gameState.kKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
-    gameState.lKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
-    gameState.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.jKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+    this.kKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    this.lKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     this.burrowLocations.forEach(b => {
       this.add.text(b.x - 10, b.y + 70, b.key.toUpperCase(), { fontSize: 32, color: '#553a1f' });
@@ -197,16 +187,16 @@ class GameScene extends Phaser.Scene {
   }
 
   initializeMole() {
-    gameState.mole = this.physics.add.sprite(0, 0, 'mole').setScale(0.5);
+    this.mole = this.physics.add.sprite(0, 0, 'mole').setScale(0.5);
     this.updateBurrow();
 
-    gameState.mole.on('animationcomplete-appear', () => gameState.mole.anims.play('idle'));
-    gameState.mole.on('animationcomplete-disappear', () => this.updateBurrow());
+    this.mole.on('animationcomplete-appear', () => this.mole.anims.play('idle'));
+    this.mole.on('animationcomplete-disappear', () => this.updateBurrow());
   }
 
   initializeParticles() {
-    gameState.dirtParticles = this.add.particles('dirt');
-    gameState.dirtEmitter = gameState.dirtParticles.createEmitter({
+    this.dirtParticles = this.add.particles('dirt');
+    this.dirtEmitter = this.dirtParticles.createEmitter({
       speed: { min: -200, max: 200 },
       angle: { min: 0, max: 360 },
       scale: { start: 0.6, end: 0 },
@@ -219,11 +209,11 @@ class GameScene extends Phaser.Scene {
   }
 
   startMoleMovement() {
-    if (gameState.moleTimer) gameState.moleTimer.remove(false);
+    if (this.moleTimer) this.moleTimer.remove(false);
 
-    gameState.moleTimer = this.time.addEvent({
-      delay: Phaser.Math.Between(moleMoveDelay - 200, moleMoveDelay + 200),
-      callback: () => { if (!isPaused) this.relocateMole(); },
+    this.moleTimer = this.time.addEvent({
+      delay: Phaser.Math.Between(this.moleMoveDelay - 200, this.moleMoveDelay + 200),
+      callback: () => { if (!this.isPaused) this.relocateMole(); },
       callbackScope: this,
       loop: true
     });
@@ -232,7 +222,7 @@ class GameScene extends Phaser.Scene {
   // ---------------------- MOLE LOGIC ----------------------
 
   increaseDifficulty() {
-    moleMoveDelay = Math.max(500, moleMoveDelay - 50);
+    this.moleMoveDelay = Math.max(500, this.moleMoveDelay - 50);
     this.startMoleMovement();
   }
 
@@ -242,93 +232,65 @@ class GameScene extends Phaser.Scene {
 
   updateBurrow() {
     const burrow = this.getRandomBurrow();
-    currentBurrowKey = burrow.key;
-    gameState.mole.setPosition(burrow.x, burrow.y);
-    gameState.mole.anims.play('appear');
+    this.currentBurrowKey = burrow.key;
+    this.mole.setPosition(burrow.x, burrow.y);
+    this.mole.anims.play('appear');
   }
 
   relocateMole() {
-    if (gameState.mole) gameState.mole.anims.play('disappear');
+    if (this.mole) this.mole.anims.play('disappear');
   }
 
   emitDirtBurst() {
-    const x = gameState.mole.x;
-    const y = gameState.mole.y;
-
     let quantity = 20;
-    if (comboStreak >= 15) quantity = 60;
-    else if (comboStreak >= 10) quantity = 40;
-    else if (comboStreak >= 5) quantity = 30;
+    if (this.comboStreak >= 15) quantity = 60;
+    else if (this.comboStreak >= 10) quantity = 40;
+    else if (this.comboStreak >= 5) quantity = 30;
 
-    gameState.dirtEmitter.explode(quantity, x, y);
+    this.dirtEmitter.explode(quantity, this.mole.x, this.mole.y);
   }
 
   // ---------------------- UI UPDATES ----------------------
 
-  updateScoreText() { gameState.scoreText.setText(`Score: ${score}`); }
-  updateTimerText() { gameState.timerText.setText(`Time: ${timeLeft}`); }
-  updateComboDisplay() { gameState.comboText.setText(`Combo: ${comboStreak}`); }
+  updateScoreText() { this.scoreText.setText(`Score: ${this.score}`); }
+  updateTimerText() { this.timerText.setText(`Time: ${this.timeLeft}`); }
+  updateComboDisplay() { this.comboText.setText(`Combo: ${this.comboStreak}`); }
 
   displayRewardText(points) {
-    const x = gameState.mole.x;
-    const y = gameState.mole.y - 40;
-    const rewardText = this.add.text(x, y, `+${points}`, {
-      fontSize: '32px',
-      fontStyle: 'bold',
-      color: '#00ff00',
-      stroke: '#003300',
-      strokeThickness: 6
-    }).setOrigin(0.5);
+    const x = this.mole.x, y = this.mole.y - 40;
+    const text = this.add.text(x, y, `+${points}`, { fontSize: '32px', fontStyle: 'bold', color: '#00ff00', stroke: '#003300', strokeThickness: 6 }).setOrigin(0.5);
 
     this.tweens.timeline({
-      targets: rewardText,
+      targets: text,
       tweens: [
         { scale: 2, duration: 100, ease: 'Back.easeOut' },
-        { y: y - 70, alpha: 0, scale: 1.2, angle: Phaser.Math.Between(-10,10), duration: 500, ease: 'Cubic.easeOut' }
+        { y: y - 70, alpha: 0, scale: 1.2, angle: Phaser.Math.Between(-10, 10), duration: 500, ease: 'Cubic.easeOut' }
       ],
-      onComplete: () => rewardText.destroy()
+      onComplete: () => text.destroy()
     });
   }
 
   displayPenaltyText() {
-    const x = gameState.mole.x;
-    const y = gameState.mole.y - 40;
-    const penaltyText = this.add.text(x, y, '-5', {
-      fontSize: '32px',
-      fontStyle: 'bold',
-      color: '#ff4444',
-      stroke: '#330000',
-      strokeThickness: 6
-    }).setOrigin(0.5);
+    const x = this.mole.x, y = this.mole.y - 40;
+    const text = this.add.text(x, y, '-5', { fontSize: '32px', fontStyle: 'bold', color: '#ff4444', stroke: '#330000', strokeThickness: 6 }).setOrigin(0.5);
 
     this.tweens.timeline({
-      targets: penaltyText,
+      targets: text,
       tweens: [
         { scale: 1.6, duration: 100, ease: 'Back.easeOut' },
-        { y: y + 60, alpha: 0, scale: 1, angle: Phaser.Math.Between(-15,15), duration: 500, ease: 'Cubic.easeOut' }
+        { y: y + 60, alpha: 0, scale: 1, angle: Phaser.Math.Between(-15, 15), duration: 500, ease: 'Cubic.easeOut' }
       ],
-      onComplete: () => penaltyText.destroy()
+      onComplete: () => text.destroy()
     });
   }
 
   checkComboMilestone() {
-    const milestone = [5, 10, 15];
-    if (milestone.includes(comboStreak)) {
+    const milestones = [5, 10, 15];
+    if (milestones.includes(this.comboStreak)) {
       const x = 240, y = 300;
-      const text = this.add.text(x, y, `COMBO x${comboStreak}!`, {
-        fontSize: '48px', fontStyle: 'bold', color: '#FFD700',
-        stroke: '#FF8C00', strokeThickness: 8
-      }).setOrigin(0.5);
+      const text = this.add.text(x, y, `COMBO x${this.comboStreak}!`, { fontSize: '48px', fontStyle: 'bold', color: '#FFD700', stroke: '#FF8C00', strokeThickness: 8 }).setOrigin(0.5);
 
-      this.tweens.add({
-        targets: text,
-        scale: { from: 0, to: 1.5 },
-        alpha: { from: 0, to: 1 },
-        duration: 350,
-        yoyo: true,
-        onComplete: () => text.destroy()
-      });
-
+      this.tweens.add({ targets: text, scale: { from: 0, to: 1.5 }, alpha: { from: 0, to: 1 }, duration: 350, yoyo: true, onComplete: () => text.destroy() });
       this.cameras.main.shake(150, 0.02);
     }
   }
@@ -336,15 +298,15 @@ class GameScene extends Phaser.Scene {
   // ---------------------- PAUSE SCREEN ----------------------
 
   displayPauseScreen() {
-    gameState.pauseOverlay = this.add.rectangle(0, 0, 480, 640, 0xFFFFFF).setOrigin(0,0).setAlpha(0.75);
-    gameState.pauseText = this.add.text(225, 325, 'PAUSED').setColor('#000000');
-    gameState.resumeText = this.add.text(125, 375, 'Press space to resume game').setColor('#000000');
+    this.pauseOverlay = this.add.rectangle(0, 0, 480, 640, 0xFFFFFF).setOrigin(0,0).setAlpha(0.75);
+    this.pauseText = this.add.text(225, 325, 'PAUSED').setColor('#000000');
+    this.resumeText = this.add.text(125, 375, 'Press space to resume game').setColor('#000000');
   }
 
   removePauseScreen() {
-    gameState.pauseOverlay.destroy();
-    gameState.pauseText.destroy();
-    gameState.resumeText.destroy();
+    this.pauseOverlay.destroy();
+    this.pauseText.destroy();
+    this.resumeText.destroy();
   }
 }
 
