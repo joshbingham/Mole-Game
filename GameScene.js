@@ -99,20 +99,18 @@ class GameScene extends Phaser.Scene {
 	// periodically checks and handles user input by updating game logic
 	update() {
 
-		// Don't process game keys if user is typing in an input
+		// Check if user is typing in an input
 		const activeElement = document.activeElement;
 		const typing = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
 
-		if (!typing) {
-			// your existing key checks here
-			if (isPaused === false) {
-				if (Phaser.Input.Keyboard.JustDown(gameState.jKey)) {
-					onBurrowHit('j');
-				} else if (Phaser.Input.Keyboard.JustDown(gameState.kKey)) {
-					onBurrowHit('k');
-				} else if (Phaser.Input.Keyboard.JustDown(gameState.lKey)) {
-					onBurrowHit('l');
-				}
+		// Only handle mole hits if user isn't typing
+		if (!typing && !isPaused) {
+			if (Phaser.Input.Keyboard.JustDown(gameState.jKey)) {
+				onBurrowHit('j');
+			} else if (Phaser.Input.Keyboard.JustDown(gameState.kKey)) {
+				onBurrowHit('k');
+			} else if (Phaser.Input.Keyboard.JustDown(gameState.lKey)) {
+				onBurrowHit('l');
 			}
 
 			if (Phaser.Input.Keyboard.JustDown(gameState.spaceKey)) {
