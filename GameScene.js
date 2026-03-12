@@ -99,6 +99,42 @@ class GameScene extends Phaser.Scene {
 	// periodically checks and handles user input by updating game logic
 	update() {
 
+		const onBurrowHit = (key) => {
+      
+			if (key === currentBurrowKey) {
+				// emit dirt particles at the mole's current location
+				this.emitDirtBurst();
+				// apply reward for hitting the mole
+				applyHitReward();
+				// update combo streak and display the new combo streak to the user
+				comboStreak++;
+				this.increaseDifficulty();
+				if (comboStreak >= 10) {
+					gameState.mole.setTint(0xffcc00);
+				}
+
+				if (comboStreak >= 15) {
+					gameState.mole.setTint(0xff4444);
+				}
+				this.updateComboDisplay();
+				this.checkComboMilestone();
+				// animate mole to provide feedback on successful hit and then move mole to new location
+				this.tweens.add({
+					targets: gameState.mole,
+					scaleX: 0.4,
+					scaleY: 0.3,
+					duration: 80,
+					yoyo: true
+					});
+				this.relocateMole();
+			} else {
+				applyMissPenalty();
+				comboStreak = 0;
+				this.updateComboDisplay();
+				gameState.mole.clearTint();
+			}
+		};
+
 		// Check if user is typing in an input
 		const activeElement = document.activeElement;
 		const typing = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
@@ -169,41 +205,7 @@ class GameScene extends Phaser.Scene {
 			updateScore(-5);
 		};
 
-    const onBurrowHit = (key) => {
-      
-	  if (key === currentBurrowKey) {
-		// emit dirt particles at the mole's current location
-		this.emitDirtBurst();
-		// apply reward for hitting the mole
-		applyHitReward();
-		// update combo streak and display the new combo streak to the user
-		comboStreak++;
-		this.increaseDifficulty();
-		if (comboStreak >= 10) {
-			gameState.mole.setTint(0xffcc00);
-		}
-
-		if (comboStreak >= 15) {
-			gameState.mole.setTint(0xff4444);
-		}
-		this.updateComboDisplay();
-		this.checkComboMilestone();
-		// animate mole to provide feedback on successful hit and then move mole to new location
-		this.tweens.add({
-			targets: gameState.mole,
-			scaleX: 0.4,
-			scaleY: 0.3,
-			duration: 80,
-			yoyo: true
-			});
-		this.relocateMole();
-	  } else {
-		applyMissPenalty();
-		comboStreak = 0;
-		this.updateComboDisplay();
-		gameState.mole.clearTint();
-	  }
-	};
+    
 
 	const togglePause = () => {
 		isPaused = !isPaused;
