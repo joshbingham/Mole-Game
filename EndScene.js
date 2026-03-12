@@ -8,8 +8,7 @@ class EndScene extends Phaser.Scene {
   }
 
   create(data) {
-    // Get the score passed from GameScene
-    const finalScore = data.finalScore;
+    const finalScore = data.finalScore ?? 0;
 
     // Display final score
     this.add.text(240, 150, `Your Score: ${finalScore}`, {
@@ -20,7 +19,7 @@ class EndScene extends Phaser.Scene {
       strokeThickness: 6
     }).setOrigin(0.5);
 
-    // Instruction to enter name
+    // Instruction text
     const instructionText = this.add.text(240, 220, 'Enter your name:', {
       fontSize: '28px',
       fontStyle: 'bold',
@@ -29,83 +28,100 @@ class EndScene extends Phaser.Scene {
       strokeThickness: 4
     }).setOrigin(0.5);
 
-    // Create HTML input element
+    // HTML input element
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.placeholder = 'Your name';
-    nameInput.style.position = 'absolute';
-    nameInput.style.width = '240px';
-    nameInput.style.fontSize = '24px';
-    nameInput.style.padding = '8px';
-    nameInput.style.borderRadius = '12px';
-    nameInput.style.border = '3px solid #ffcc00';
-    nameInput.style.backgroundColor = '#553a1f';
-    nameInput.style.color = '#ffcc00';
-    nameInput.style.fontWeight = 'bold';
+    Object.assign(nameInput.style, {
+      position: 'absolute',
+      width: '240px',
+      fontSize: '24px',
+      padding: '8px',
+      borderRadius: '12px',
+      border: '3px solid #ffcc00',
+      backgroundColor: '#553a1f',
+      color: '#ffcc00',
+      fontWeight: 'bold',
+      zIndex: 9999
+    });
     document.body.appendChild(nameInput);
 
-    // Create Submit button
+    // Submit button
     const submitButton = document.createElement('button');
     submitButton.innerText = 'Submit Score';
-    submitButton.style.position = 'absolute';
-    submitButton.style.width = '160px';
-    submitButton.style.fontSize = '20px';
-    submitButton.style.padding = '8px';
-    submitButton.style.borderRadius = '12px';
-    submitButton.style.border = '3px solid #ffcc00';
-    submitButton.style.backgroundColor = '#ffcc00';
-    submitButton.style.color = '#553a1f';
-    submitButton.style.fontWeight = 'bold';
-    submitButton.style.cursor = 'pointer';
-
+    Object.assign(submitButton.style, {
+      position: 'absolute',
+      width: '160px',
+      fontSize: '20px',
+      padding: '8px',
+      borderRadius: '12px',
+      border: '3px solid #ffcc00',
+      backgroundColor: '#ffcc00',
+      color: '#553a1f',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      zIndex: 9999
+    });
     submitButton.onmouseover = () => submitButton.style.backgroundColor = '#ffd633';
     submitButton.onmouseout = () => submitButton.style.backgroundColor = '#ffcc00';
-
     document.body.appendChild(submitButton);
+
+    // Loading text
+    const loadingText = this.add.text(240, 280, 'Saving score...', {
+      fontSize: '24px',
+      fontStyle: 'bold',
+      color: '#ffffff'
+    }).setOrigin(0.5).setVisible(false);
 
     // Center input and button
     const centerElements = () => {
       const canvasRect = this.game.canvas.getBoundingClientRect();
-      const canvasCenterX = canvasRect.left + canvasRect.width / 2;
-      const canvasTop = canvasRect.top;
+      const centerX = canvasRect.left + canvasRect.width / 2;
+      const topY = canvasRect.top;
 
-      nameInput.style.top = canvasTop + instructionText.y + 140 + 'px';
-      nameInput.style.left = canvasCenterX - nameInput.offsetWidth / 2 + 'px';
+      nameInput.style.top = `${topY + instructionText.y + 140}px`;
+      nameInput.style.left = `${centerX - nameInput.offsetWidth / 2}px`;
 
-      submitButton.style.top = canvasTop + instructionText.y + 210 + 'px';
-      submitButton.style.left = canvasCenterX - submitButton.offsetWidth / 2 + 'px';
+      submitButton.style.top = `${topY + instructionText.y + 210}px`;
+      submitButton.style.left = `${centerX - submitButton.offsetWidth / 2}px`;
     };
     centerElements();
     window.addEventListener('resize', centerElements);
 
-    // Submit button click
+    // Submit handler
     submitButton.addEventListener('click', async () => {
       const playerName = nameInput.value.trim() || 'Player 1';
+      loadingText.setVisible(true);
+      submitButton.disabled = true;
+      nameInput.disabled = true;
+
       try {
         const response = await fetch("https://mole-unearther.onrender.com/scores", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: playerName, score: finalScore })
         });
+
         const result = await response.json();
         console.log('Score saved:', result);
 
-        // Clean up input/button
+        // Cleanup and move to leaderboard
         nameInput.remove();
         submitButton.remove();
-
         this.scene.start('LeaderboardScene');
       } catch (err) {
         console.error('Failed to save score:', err);
+        loadingText.setText('Failed to save. Try again.');
+        submitButton.disabled = false;
+        nameInput.disabled = false;
       }
     });
 
-    // Back to Menu button
+    // Menu button
     const menuButton = this.add.text(240, 420, 'Back to Menu', {
       fontSize: '28px',
       color: '#00ccff'
     }).setOrigin(0.5).setInteractive();
-
     menuButton.on('pointerdown', () => {
       nameInput.remove();
       submitButton.remove();
@@ -117,12 +133,14 @@ class EndScene extends Phaser.Scene {
       fontSize: '28px',
       color: '#00ff00'
     }).setOrigin(0.5).setInteractive();
-
     playAgainButton.on('pointerdown', () => {
       nameInput.remove();
       submitButton.remove();
       this.scene.start('GameScene');
     });
+
+    // Ensure the Phaser canvas is always above HTML input
+    this.game.canvas.style.zIndex = 1;
   }
 }
 
