@@ -160,7 +160,7 @@ class GameScene extends Phaser.Scene {
           this.updateTimerText();
           if (this.timeLeft <= 0) {
             this.scene.stop('GameScene');
-            this.scene.start('EndScene');
+            this.scene.start('EndScene', { finalScore: this.score });
           }
         }
       },
