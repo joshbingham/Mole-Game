@@ -99,6 +99,31 @@ class GameScene extends Phaser.Scene {
 	// periodically checks and handles user input by updating game logic
 	update() {
 
+		// user successfully hit the mole, so reward the user with 5pts
+		const applyHitReward = () => {
+			// calculate combo-based points
+			const pointsEarned = calculatePoints();
+
+			// update the score first
+			score += pointsEarned;
+			this.updateScoreText();
+
+			// shake and flash camera to provide feedback on successful hit
+			this.cameras.main.shake(100, 0.01);
+			if (comboStreak >= 15) {
+				this.cameras.main.flash(120, 255, 80, 80); // red
+			} else if (comboStreak >= 10) {
+				this.cameras.main.flash(120, 255, 200, 0); // gold
+			} else if (comboStreak >= 5) {
+				this.cameras.main.flash(100, 255, 255, 150); // yellow
+			} else {
+				this.cameras.main.flash(100, 255, 255, 255);
+			}
+
+			// display reward text
+			this.displayRewardText(pointsEarned);
+		};
+
 		const onBurrowHit = (key) => {
       
 			if (key === currentBurrowKey) {
@@ -157,30 +182,7 @@ class GameScene extends Phaser.Scene {
 		const updateScore = (points) => {
 			score += points;
 		};
-		// user successfully hit the mole, so reward the user with 5pts
-		const applyHitReward = () => {
-			// calculate combo-based points
-			const pointsEarned = calculatePoints();
-
-			// update the score first
-			score += pointsEarned;
-			this.updateScoreText();
-
-			// shake and flash camera to provide feedback on successful hit
-			this.cameras.main.shake(100, 0.01);
-			if (comboStreak >= 15) {
-				this.cameras.main.flash(120, 255, 80, 80); // red
-			} else if (comboStreak >= 10) {
-				this.cameras.main.flash(120, 255, 200, 0); // gold
-			} else if (comboStreak >= 5) {
-				this.cameras.main.flash(100, 255, 255, 150); // yellow
-			} else {
-				this.cameras.main.flash(100, 255, 255, 255);
-			}
-
-			// display reward text
-			this.displayRewardText(pointsEarned);
-		};
+		
 
 		// user missed the mole, so penalize the user by taking away 5pts
 		const applyMissPenalty = () => {
